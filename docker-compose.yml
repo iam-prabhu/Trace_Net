@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:5
+    container_name: fraud_neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/frauddetect123
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: fraud_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: frauddb
+      POSTGRES_USER: frauduser
+      POSTGRES_PASSWORD: fraudpass123
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./database/postgres/migrations:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  pg_data:
