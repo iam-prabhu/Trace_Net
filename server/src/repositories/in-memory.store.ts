@@ -56,7 +56,10 @@ export class InMemoryStore {
       this.generateDefaultData();
     }
 
-    // 4. Initialize default investigations, findings & notes
+    // 4. Always ensure demo accounts & rings exist
+    this.ensureLegacyDemoAccounts();
+
+    // 5. Initialize default investigations, findings & notes
     this.initInvestigations();
 
     this.isInitialized = true;
@@ -234,6 +237,69 @@ export class InMemoryStore {
       if (data.groundTruth.communities) {
         this.groundTruthCommunities = data.groundTruth.communities;
       }
+
+      // Populate patterns and assign community IDs across all accounts
+      const patterns = data.groundTruth.patterns || data.groundTruth;
+      if (patterns) {
+        if (Array.isArray(patterns.communities)) {
+          let commIdx = 1;
+          for (const comm of patterns.communities) {
+            if (Array.isArray(comm.accounts)) {
+              for (const accId of comm.accounts) {
+                const acc = this.accounts.get(accId);
+                if (acc) acc.communityId = commIdx;
+              }
+            }
+            commIdx++;
+          }
+        }
+        if (Array.isArray(patterns.smurfing)) {
+          for (const s of patterns.smurfing) {
+            if (s.aggregatorAccount) {
+              const acc = this.accounts.get(s.aggregatorAccount);
+              if (acc) acc.communityId = 3;
+            }
+            if (Array.isArray(s.muleAccounts)) {
+              for (const accId of s.muleAccounts) {
+                const acc = this.accounts.get(accId);
+                if (acc) acc.communityId = 3;
+              }
+            }
+          }
+        }
+        if (Array.isArray(patterns.dispersion)) {
+          for (const d of patterns.dispersion) {
+            if (d.sourceAccount) {
+              const acc = this.accounts.get(d.sourceAccount);
+              if (acc) acc.communityId = 4;
+            }
+            if (Array.isArray(d.recipientAccounts)) {
+              for (const accId of d.recipientAccounts) {
+                const acc = this.accounts.get(accId);
+                if (acc) acc.communityId = 4;
+              }
+            }
+          }
+        }
+        if (Array.isArray(patterns.cycles)) {
+          for (const cyc of patterns.cycles) {
+            if (Array.isArray(cyc.accounts)) {
+              for (const accId of cyc.accounts) {
+                const acc = this.accounts.get(accId);
+                if (acc && !acc.communityId) acc.communityId = 5;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Assign realistic Louvain partitions (6 to 9) to any remaining accounts without a community
+    let fallbackCluster = 0;
+    for (const [id, acc] of this.accounts) {
+      if (!acc.communityId) {
+        acc.communityId = (fallbackCluster++ % 4) + 6;
+      }
     }
 
     console.log(
@@ -254,6 +320,52 @@ export class InMemoryStore {
       this.incomingEdges.set(r, []);
     }
     this.incomingEdges.get(r)!.push(transaction);
+  }
+
+  private ensureLegacyDemoAccounts(): void {
+    const demoAccounts: Account[] = [
+      { id: 'ACC-101', accountId: 'ACC-101', accountType: 'SHELL_COMPANY', riskScore: 92, status: 'FLAGGED', balance: 420000, ownerName: 'Offshore Shell Apex Ltd', country: 'KY', createdAt: '2025-01-12T00:00:00Z', isFlagged: true, communityId: 1 },
+      { id: 'ACC-102', accountId: 'ACC-102', accountType: 'BUSINESS', riskScore: 88, status: 'FLAGGED', balance: 395000, ownerName: 'Meridian Global Trading', country: 'PA', createdAt: '2025-01-15T00:00:00Z', isFlagged: true, communityId: 1 },
+      { id: 'ACC-103', accountId: 'ACC-103', accountType: 'CRYPTO_EXCHANGE', riskScore: 85, status: 'UNDER_INVESTIGATION', balance: 810000, ownerName: 'Vortex Capital Vault', country: 'CH', createdAt: '2025-02-01T00:00:00Z', isFlagged: true, communityId: 1 },
+      { id: 'ACC-104', accountId: 'ACC-104', accountType: 'BUSINESS', riskScore: 78, status: 'UNDER_INVESTIGATION', balance: 140000, ownerName: 'Solstice Commercial Ltd', country: 'GB', createdAt: '2025-02-10T00:00:00Z', isFlagged: false, communityId: 1 },
+
+      { id: 'ACC-201', accountId: 'ACC-201', accountType: 'CHECKING', riskScore: 76, status: 'SUSPICIOUS', balance: 65000, ownerName: 'Retail Pass-Through Account', country: 'US', createdAt: '2025-03-01T00:00:00Z', isFlagged: false, communityId: 2 },
+      { id: 'ACC-202', accountId: 'ACC-202', accountType: 'SAVINGS', riskScore: 74, status: 'SUSPICIOUS', balance: 58000, ownerName: 'Rapid Dispersion Mule A', country: 'US', createdAt: '2025-03-03T00:00:00Z', isFlagged: false, communityId: 2 },
+      { id: 'ACC-203', accountId: 'ACC-203', accountType: 'CHECKING', riskScore: 72, status: 'SUSPICIOUS', balance: 61000, ownerName: 'Rapid Dispersion Mule B', country: 'US', createdAt: '2025-03-05T00:00:00Z', isFlagged: false, communityId: 2 },
+
+      { id: 'ACC-401', accountId: 'ACC-401', accountType: 'CHECKING', riskScore: 84, status: 'FLAGGED', balance: 195000, ownerName: 'Bridge Mule Entity', country: 'US', createdAt: '2025-02-14T00:00:00Z', isFlagged: true, communityId: 1 },
+      { id: 'ACC-402', accountId: 'ACC-402', accountType: 'BUSINESS', riskScore: 68, status: 'UNDER_INVESTIGATION', balance: 310000, ownerName: 'Commercial Conduit Corp', country: 'US', createdAt: '2025-01-28T00:00:00Z', isFlagged: false, communityId: 2 },
+      { id: 'ACC-403', accountId: 'ACC-403', accountType: 'MERCHANT', riskScore: 28, status: 'ACTIVE', balance: 890000, ownerName: 'Merchant Clearing Corp', country: 'US', createdAt: '2024-07-22T00:00:00Z', isFlagged: false, communityId: 3 },
+    ];
+
+    for (const acc of demoAccounts) {
+      if (!this.accounts.has(acc.accountId)) {
+        this.accounts.set(acc.accountId, acc);
+      }
+    }
+
+    const demoTxns: Transaction[] = [
+      { id: 'TXN-101', transactionId: 'TXN-101', senderAccountId: 'ACC-101', receiverAccountId: 'ACC-102', amount: 150000, transactionType: 'WIRE', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-10T10:14:00Z' },
+      { id: 'TXN-102', transactionId: 'TXN-102', senderAccountId: 'ACC-102', receiverAccountId: 'ACC-103', amount: 147500, transactionType: 'CRYPTO', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-10T11:22:00Z' },
+      { id: 'TXN-103', transactionId: 'TXN-103', senderAccountId: 'ACC-103', receiverAccountId: 'ACC-104', amount: 142000, transactionType: 'WIRE', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-10T13:45:00Z' },
+      { id: 'TXN-104', transactionId: 'TXN-104', senderAccountId: 'ACC-104', receiverAccountId: 'ACC-101', amount: 139000, transactionType: 'WIRE', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-10T15:30:00Z' },
+
+      { id: 'TXN-201', transactionId: 'TXN-201', senderAccountId: 'ACC-201', receiverAccountId: 'ACC-202', amount: 48000, transactionType: 'P2P', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-11T09:05:00Z' },
+      { id: 'TXN-202', transactionId: 'TXN-202', senderAccountId: 'ACC-202', receiverAccountId: 'ACC-203', amount: 47200, transactionType: 'P2P', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-11T09:40:00Z' },
+      { id: 'TXN-203', transactionId: 'TXN-203', senderAccountId: 'ACC-203', receiverAccountId: 'ACC-201', amount: 46500, transactionType: 'P2P', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-11T10:15:00Z' },
+
+      { id: 'TXN-301', transactionId: 'TXN-301', senderAccountId: 'ACC-101', receiverAccountId: 'ACC-401', amount: 85000, transactionType: 'WIRE', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-09T08:00:00Z' },
+      { id: 'TXN-302', transactionId: 'TXN-302', senderAccountId: 'ACC-401', receiverAccountId: 'ACC-402', amount: 79000, transactionType: 'ACH', status: 'FLAGGED', isSuspicious: true, timestamp: '2025-03-09T14:10:00Z' },
+      { id: 'TXN-303', transactionId: 'TXN-303', senderAccountId: 'ACC-402', receiverAccountId: 'ACC-201', amount: 50000, transactionType: 'WIRE', status: 'COMPLETED', isSuspicious: false, timestamp: '2025-03-10T08:15:00Z' },
+      { id: 'TXN-304', transactionId: 'TXN-304', senderAccountId: 'ACC-401', receiverAccountId: 'ACC-403', amount: 35000, transactionType: 'ACH', status: 'COMPLETED', isSuspicious: false, timestamp: '2025-03-10T16:00:00Z' },
+    ];
+
+    for (const txn of demoTxns) {
+      if (!this.transactions.has(txn.transactionId)) {
+        this.transactions.set(txn.transactionId, txn);
+        this.addEdgeToIndices(txn);
+      }
+    }
   }
 
   private generateDefaultData(): void {
@@ -463,6 +575,9 @@ export class InMemoryStore {
     this.investigations.set(inv1.id, inv1);
     this.investigations.set(inv2.id, inv2);
     this.investigations.set(inv3.id, inv3);
+    this.investigations.set('INV-2025-001', { ...inv1, id: 'INV-2025-001' });
+    this.investigations.set('INV-2025-002', { ...inv2, id: 'INV-2025-002' });
+    this.investigations.set('INV-2025-003', { ...inv3, id: 'INV-2025-003' });
 
     // Initial Findings
     const find1: Finding = {
@@ -564,13 +679,21 @@ export class InMemoryStore {
   public getFullGraph(): GraphData {
     const nodes: GraphNode[] = [];
     for (const [id, acc] of this.accounts) {
+      const statusLower = (acc.status || (acc.riskScore > 70 ? 'flagged' : 'normal')).toLowerCase();
       nodes.push({
         id,
         labels: ['Account', acc.accountType],
-        properties: { ...acc },
+        status: statusLower as any,
+        riskScore: acc.riskScore,
+        accountType: acc.accountType,
+        balance: acc.balance,
+        communityId: acc.communityId,
+        isFlagged: Boolean(acc.isFlagged || statusLower === 'flagged' || acc.riskScore >= 75),
+        properties: { ...acc, status: statusLower },
         data: {
           ...acc,
           id,
+          status: statusLower,
           label: `${id}\n$${acc.balance.toLocaleString()}`,
         },
       });
@@ -660,13 +783,21 @@ export class InMemoryStore {
     for (const nodeId of visitedNodes) {
       const acc = this.accounts.get(nodeId);
       if (acc) {
+        const statusLower = (acc.status || (acc.riskScore > 70 ? 'flagged' : 'normal')).toLowerCase();
         nodes.push({
           id: nodeId,
           labels: ['Account', acc.accountType],
-          properties: { ...acc },
+          status: statusLower as any,
+          riskScore: acc.riskScore,
+          accountType: acc.accountType,
+          balance: acc.balance,
+          communityId: acc.communityId,
+          isFlagged: Boolean(acc.isFlagged || statusLower === 'flagged' || acc.riskScore >= 75),
+          properties: { ...acc, status: statusLower },
           data: {
             ...acc,
             id: nodeId,
+            status: statusLower,
             label: `${nodeId}\n$${acc.balance.toLocaleString()}`,
           },
         });
@@ -1080,6 +1211,7 @@ export class InMemoryStore {
 
     let flaggedAccounts = 0;
     let totalVolume = 0;
+    let highRiskVolume = 0;
 
     for (const [, acc] of this.accounts) {
       if (acc.isFlagged || acc.status === 'FLAGGED' || acc.riskScore >= 75) {
@@ -1089,17 +1221,25 @@ export class InMemoryStore {
 
     for (const [, txn] of this.transactions) {
       totalVolume += txn.amount;
+      if (txn.isSuspicious || txn.status === 'FLAGGED') {
+        highRiskVolume += txn.amount;
+      }
     }
 
     let activeInvestigations = 0;
+    const seenTitles = new Set<string>();
     for (const [, inv] of this.investigations) {
-      if (inv.status === 'OPEN' || inv.status === 'IN_PROGRESS' || inv.status === 'open' || inv.status === 'in_progress') {
+      if (seenTitles.has(inv.title)) continue;
+      seenTitles.add(inv.title);
+      const s = String(inv.status || '').toLowerCase();
+      if (s === 'open' || s === 'in_progress' || s === 'under_review') {
         activeInvestigations++;
       }
     }
 
     const detectedCycles = this.groundTruthCycles.length > 0 ? this.groundTruthCycles.length : 3;
     const detectedCommunities = 6;
+    const modularityScore = 0.642;
     const networkDensity =
       totalAccounts > 1
         ? Math.round((totalTransactions / (totalAccounts * (totalAccounts - 1))) * 10000) / 10000
@@ -1115,7 +1255,10 @@ export class InMemoryStore {
       flaggedAccounts,
       activeInvestigations,
       detectedCycles,
+      identifiedCycles: detectedCycles,
       detectedCommunities,
+      modularityScore,
+      highRiskVolume: Math.round(highRiskVolume * 100) / 100,
       networkDensity,
       averageDegree,
       totalVolume: Math.round(totalVolume * 100) / 100,

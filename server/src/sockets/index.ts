@@ -1,1 +1,1 @@
-export { registerCollaborationHandlers } from './collaboration.socket';
+export { registerCollaborationHandlers, getRoomActiveUsers } from './collaboration.socket';

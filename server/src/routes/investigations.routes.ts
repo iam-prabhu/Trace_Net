@@ -9,6 +9,7 @@ router.get('/', investigationsController.getInvestigations);
 router.post('/', investigationsController.createInvestigation);
 
 router.get('/:id', investigationsController.getInvestigation);
+router.get('/:id/members', investigationsController.getInvestigationMembers);
 router.put('/:id', investigationsController.updateInvestigation);
 router.patch('/:id', investigationsController.updateInvestigation);
 router.delete('/:id', investigationsController.deleteInvestigation);

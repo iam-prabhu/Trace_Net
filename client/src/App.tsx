@@ -8,9 +8,9 @@ import TransactionExplorer from './pages/TransactionExplorer';
 import Investigations from './pages/Investigations';
 import InvestigationDetailPage from './pages/InvestigationDetailPage';
 import FraudAnalysis from './pages/FraudAnalysis';
+import GeospatialIntelligence from './pages/GeospatialIntelligence';
 import Collaboration from './pages/Collaboration';
 import DataManagement from './pages/DataManagement';
-import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
@@ -46,9 +46,11 @@ export default function App() {
               <Route path="investigations" element={<Investigations />} />
               <Route path="investigations/:id" element={<InvestigationDetailPage />} />
               <Route path="analysis" element={<FraudAnalysis />} />
+              <Route path="geospatial" element={<GeospatialIntelligence />} />
+              <Route path="globe" element={<Navigate to="/geospatial" replace />} />
               <Route path="collaboration" element={<Collaboration />} />
               <Route path="data" element={<DataManagement />} />
-              <Route path="settings" element={<Settings />} />
+              <Route path="settings" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
         </BrowserRouter>

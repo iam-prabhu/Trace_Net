@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as accountsService from '../services/accounts.service';
 import { sendSuccess, sendError, sendPaginated } from '../utils/response';
+import { io } from '../app';
 
 export async function getAccounts(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -99,6 +100,12 @@ export async function updateAccount(req: Request, res: Response, next: NextFunct
     if (!updated) {
       sendError(res, `Account not found: ${accountId}`, 404);
       return;
+    }
+    try {
+      io.emit('account:updated', updated);
+      io.emit('graph:node-updated', updated);
+    } catch {
+      // ignore socket emit error
     }
     sendSuccess(res, updated);
   } catch (err) {

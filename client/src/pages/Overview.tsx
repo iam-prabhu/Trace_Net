@@ -9,11 +9,10 @@ import {
 } from 'lucide-react';
 import { StatCard } from '../components/dashboard/StatCard';
 import { TransactionChart } from '../components/dashboard/TransactionChart';
-import { MiniGraphView } from '../components/dashboard/MiniGraphView';
 import { RecentFindings } from '../components/dashboard/RecentFindings';
 import { RecentInvestigations } from '../components/dashboard/RecentInvestigations';
-import { ActivityFeed } from '../components/dashboard/ActivityFeed';
 import { getStatistics } from '../services/graph.service';
+import { getSocket } from '../services/socket';
 import type { GraphStatistics } from '../types/graph.types';
 import { MOCK_STATISTICS } from '../services/mock-data';
 
@@ -23,14 +22,34 @@ export default function Overview() {
 
   useEffect(() => {
     let mounted = true;
-    getStatistics().then((res) => {
-      if (mounted) {
-        setStats(res);
-        setIsLoading(false);
-      }
-    });
+    const fetchStats = () => {
+      getStatistics().then((res) => {
+        if (mounted) {
+          setStats(res);
+          setIsLoading(false);
+        }
+      });
+    };
+
+    fetchStats();
+
+    let socket: any = null;
+    try {
+      socket = getSocket();
+      socket.on('investigation:status-updated', () => {
+        fetchStats();
+      });
+      socket.on('investigation:created', () => {
+        fetchStats();
+      });
+    } catch {}
+
     return () => {
       mounted = false;
+      if (socket) {
+        socket.off('investigation:status-updated');
+        socket.off('investigation:created');
+      }
     };
   }, []);
 
@@ -39,19 +58,19 @@ export default function Overview() {
       {/* Page Title & Operational Summary */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             Intelligence Overview
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Real-time graph analytics, circular laundering rings & collaborative case monitoring
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono">
-            Modularity Score: <span className="text-purple-400 font-bold">{stats.modularityScore}</span>
+          <div className="px-3 py-1.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 text-xs font-mono font-semibold">
+            Modularity Score: <span className="text-purple-700 font-bold">{stats.modularityScore ?? 0.642}</span>
           </div>
-          <div className="px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold">
+          <div className="px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
             {isLoading ? 'Syncing...' : 'Connected Engine'}
           </div>
         </div>
@@ -94,7 +113,7 @@ export default function Overview() {
         />
         <StatCard
           title="Identified Cycles"
-          value={stats.identifiedCycles}
+          value={stats.identifiedCycles ?? (stats as any).detectedCycles ?? 3}
           icon={Repeat}
           change="+3 new"
           isPositive={false}
@@ -111,14 +130,9 @@ export default function Overview() {
         />
       </div>
 
-      {/* Primary Analytics Section: Chart + Mini Graph View */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-7 h-[360px]">
-          <TransactionChart />
-        </div>
-        <div className="lg:col-span-5 h-[360px]">
-          <MiniGraphView />
-        </div>
+      {/* Primary Analytics Section: Full-width Transaction Volume Chart */}
+      <div className="h-[360px]">
+        <TransactionChart />
       </div>
 
       {/* Secondary Tables: Findings & Investigations */}
@@ -129,11 +143,6 @@ export default function Overview() {
         <div className="lg:col-span-5">
           <RecentInvestigations />
         </div>
-      </div>
-
-      {/* Bottom Timeline: Activity Feed */}
-      <div>
-        <ActivityFeed />
       </div>
     </div>
   );

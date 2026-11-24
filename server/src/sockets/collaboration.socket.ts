@@ -37,6 +37,13 @@ function getRoomName(id: string): string {
   return id.startsWith('investigation:') ? id : `investigation:${id}`;
 }
 
+export function getRoomActiveUsers(investigationId: string): UserPresence[] {
+  const room = getRoomName(investigationId);
+  const roomPresences = roomPresenceMap.get(room);
+  if (!roomPresences) return [];
+  return Array.from(roomPresences.values());
+}
+
 export function registerCollaborationHandlers(io: Server): void {
   // Authentication middleware
   io.use((socket: CollaborationSocket, next) => {
@@ -230,6 +237,19 @@ export function registerCollaborationHandlers(io: Server): void {
       socket.to(room).emit('investigation:status-updated', {
         ...data,
         updatedBy: user.name,
+      });
+    });
+
+    // Real-time Chat / Collaboration Stream event
+    socket.on('investigation:chat', (data: { investigationId: string; message: string }) => {
+      const room = getRoomName(data.investigationId);
+      socket.to(room).emit('investigation:chat', {
+        id: `chat-${Date.now()}`,
+        investigationId: data.investigationId,
+        user: user.name,
+        color: userColor,
+        message: data.message,
+        time: new Date().toLocaleTimeString(),
       });
     });
 

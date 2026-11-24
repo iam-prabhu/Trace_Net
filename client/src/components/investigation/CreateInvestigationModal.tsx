@@ -145,10 +145,10 @@ export function CreateInvestigationModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-blue-500/20 transition"
+              className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 !text-white rounded-xl font-bold text-xs shadow-lg shadow-blue-500/25 transition cursor-pointer active:scale-[0.99] disabled:opacity-50"
             >
-              <Plus className="w-4 h-4" />
-              {isSubmitting ? 'Creating Case...' : 'Create Case Dossier'}
+              <Plus className="w-4 h-4 !text-white shrink-0" />
+              <span className="!text-white font-bold">{isSubmitting ? 'Creating Case...' : 'Create Case Dossier'}</span>
             </button>
           </div>
         </form>

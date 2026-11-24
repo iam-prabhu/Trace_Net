@@ -7,13 +7,13 @@ export function GraphLegend() {
   const { colorByCommunity } = useGraphStore();
 
   return (
-    <div className="absolute bottom-4 left-4 z-10 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl shadow-2xl text-slate-200 text-xs w-64 transition-all">
+    <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl shadow-lg text-slate-800 text-xs w-64 transition-all">
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between px-3 py-2 cursor-pointer border-b border-slate-800/80 select-none hover:bg-slate-800/50 rounded-t-xl"
+        className="flex items-center justify-between px-3 py-2 cursor-pointer border-b border-slate-200 select-none hover:bg-slate-50 rounded-t-xl"
       >
-        <div className="flex items-center gap-1.5 font-semibold text-slate-200">
-          <Info className="w-3.5 h-3.5 text-blue-400" />
+        <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+          <Info className="w-3.5 h-3.5 text-blue-600" />
           <span>Graph Legend</span>
         </div>
         {isExpanded ? (
@@ -27,7 +27,7 @@ export function GraphLegend() {
         <div className="p-3 space-y-3">
           {/* Node Status / Community Section */}
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
               {colorByCommunity ? 'Louvain Communities' : 'Account Status'}
             </div>
             {colorByCommunity ? (

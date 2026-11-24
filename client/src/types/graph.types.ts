@@ -14,6 +14,7 @@ export interface GraphNode {
   incomingAmount?: number;
   outgoingAmount?: number;
   createdAt?: string;
+  isFlagged?: boolean;
   directNeighbors?: string[];
   properties?: Record<string, unknown>;
   x?: number;
@@ -25,6 +26,8 @@ export interface GraphEdge {
   type?: string;
   source: string;
   target: string;
+  startNodeId?: string;
+  endNodeId?: string;
   amount: number;
   timestamp?: string;
   status?: 'COMPLETED' | 'FLAGGED' | 'BLOCKED' | 'PENDING' | string;

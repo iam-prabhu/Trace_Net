@@ -28,6 +28,12 @@ export interface Transaction {
 export interface GraphNode {
   id: string;
   labels: string[];
+  status?: string;
+  riskScore?: number;
+  accountType?: string;
+  balance?: number;
+  communityId?: number;
+  isFlagged?: boolean;
   properties: Record<string, unknown>;
   // Cytoscape friendly format
   data?: Record<string, unknown>;
@@ -130,7 +136,10 @@ export interface GraphStatistics {
   flaggedAccounts: number;
   activeInvestigations: number;
   detectedCycles: number;
+  identifiedCycles?: number;
   detectedCommunities: number;
+  modularityScore?: number;
+  highRiskVolume?: number;
   networkDensity: number;
   averageDegree: number;
   totalVolume: number;

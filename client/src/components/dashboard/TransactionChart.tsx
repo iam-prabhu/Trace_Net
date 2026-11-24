@@ -42,23 +42,23 @@ export function TransactionChart() {
   const data = DATA_BY_RANGE[range];
 
   return (
-    <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-sm flex flex-col h-full">
+    <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col h-full">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div>
-          <h3 className="font-bold text-sm text-white">Transaction Activity & Anomaly Ingestion</h3>
-          <p className="text-xs text-slate-400">Normal vs Suspicious transaction volumes over time</p>
+          <h3 className="font-bold text-sm text-slate-900">Transaction Activity & Anomaly Ingestion</h3>
+          <p className="text-xs text-slate-500">Normal vs Suspicious transaction volumes over time</p>
         </div>
 
         {/* Range Selector */}
-        <div className="flex items-center gap-1 p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 text-xs">
+        <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs">
           {(['24h', '7d', '30d'] as TimeRange[]).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`px-3 py-1 rounded-lg font-medium transition ${
+              className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer ${
                 range === r
-                  ? 'bg-blue-600 text-white shadow'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {r.toUpperCase()}
@@ -72,24 +72,25 @@ export function TransactionChart() {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="normalGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
                 <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="suspiciousGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.6} />
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
                 <stop offset="95%" stopColor="#ef4444" stopOpacity={0.0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            <XAxis dataKey="time" stroke="#64748b" fontSize={11} tickLine={false} />
-            <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <XAxis dataKey="time" stroke="#94a3b8" fontSize={11} tickLine={false} />
+            <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#0f172a',
-                borderColor: '#334155',
+                backgroundColor: '#ffffff',
+                borderColor: '#e2e8f0',
                 borderRadius: '12px',
-                color: '#f8fafc',
+                color: '#0f172a',
                 fontSize: '12px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
               }}
             />
             <Area
@@ -115,7 +116,7 @@ export function TransactionChart() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-6 mt-2 pt-2 border-t border-slate-800 text-xs text-slate-400">
+      <div className="flex items-center justify-center gap-6 mt-2 pt-2 border-t border-slate-100 text-xs text-slate-600">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-blue-500" />
           <span>Cleared / Normal Flow</span>

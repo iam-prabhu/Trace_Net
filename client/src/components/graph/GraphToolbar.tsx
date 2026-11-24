@@ -6,7 +6,6 @@ import {
   Minimize2,
   Focus,
   RotateCcw,
-  Palette,
   Download,
   Share2,
 } from 'lucide-react';
@@ -29,8 +28,6 @@ export function GraphToolbar({
     cyInstance,
     layoutName,
     setLayoutName,
-    colorByCommunity,
-    setColorByCommunity,
     clearHighlights,
     clearSelection,
   } = useGraphStore();
@@ -80,30 +77,30 @@ export function GraphToolbar({
   };
 
   return (
-    <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl shadow-2xl text-slate-200">
+    <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-1.5 p-1.5 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl shadow-lg text-slate-700">
       {/* Layout selector */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-slate-800/80 rounded-lg border border-slate-700/50">
-        <span className="text-xs font-semibold text-slate-400">Layout:</span>
+      <div className="flex items-center gap-1 px-2 py-1 bg-slate-50 rounded-lg border border-slate-200">
+        <span className="text-xs font-semibold text-slate-500">Layout:</span>
         <select
           value={layoutName}
           onChange={(e) => handleLayoutChange(e.target.value as any)}
-          className="bg-transparent text-xs font-medium text-slate-200 outline-none cursor-pointer"
+          className="bg-transparent text-xs font-medium text-slate-800 outline-none cursor-pointer"
         >
-          <option value="cose" className="bg-slate-900 text-slate-200">Force Directed (CoSE)</option>
-          <option value="concentric" className="bg-slate-900 text-slate-200">Concentric Circles</option>
-          <option value="circle" className="bg-slate-900 text-slate-200">Circular Ring</option>
-          <option value="breadthfirst" className="bg-slate-900 text-slate-200">Breadth-First Hierarchy</option>
-          <option value="cola" className="bg-slate-900 text-slate-200">Cola Physics</option>
+          <option value="cose" className="bg-white text-slate-800">Force Directed (CoSE)</option>
+          <option value="concentric" className="bg-white text-slate-800">Concentric Circles</option>
+          <option value="circle" className="bg-white text-slate-800">Circular Ring</option>
+          <option value="breadthfirst" className="bg-white text-slate-800">Breadth-First Hierarchy</option>
+          <option value="cola" className="bg-white text-slate-800">Cola Physics</option>
         </select>
       </div>
 
-      <div className="h-5 w-px bg-slate-700/60 mx-0.5" />
+      <div className="h-5 w-px bg-slate-200 mx-0.5" />
 
       {/* Zoom controls */}
       <button
         onClick={handleZoomIn}
         title="Zoom In"
-        className="p-1.5 hover:bg-slate-800 rounded-lg transition text-slate-300 hover:text-white"
+        className="p-1.5 hover:bg-slate-100 rounded-lg transition text-slate-600 hover:text-slate-900 cursor-pointer"
       >
         <ZoomIn className="w-4 h-4" />
       </button>
@@ -111,7 +108,7 @@ export function GraphToolbar({
       <button
         onClick={handleZoomOut}
         title="Zoom Out"
-        className="p-1.5 hover:bg-slate-800 rounded-lg transition text-slate-300 hover:text-white"
+        className="p-1.5 hover:bg-slate-100 rounded-lg transition text-slate-600 hover:text-slate-900 cursor-pointer"
       >
         <ZoomOut className="w-4 h-4" />
       </button>
@@ -119,7 +116,7 @@ export function GraphToolbar({
       <button
         onClick={handleFit}
         title="Fit Graph to Viewport"
-        className="p-1.5 hover:bg-slate-800 rounded-lg transition text-slate-300 hover:text-white"
+        className="p-1.5 hover:bg-slate-100 rounded-lg transition text-slate-600 hover:text-slate-900 cursor-pointer"
       >
         <Focus className="w-4 h-4" />
       </button>
@@ -127,67 +124,51 @@ export function GraphToolbar({
       <button
         onClick={handleCenter}
         title="Center Graph"
-        className="p-1.5 hover:bg-slate-800 rounded-lg transition text-slate-300 hover:text-white"
+        className="p-1.5 hover:bg-slate-100 rounded-lg transition text-slate-600 hover:text-slate-900 cursor-pointer"
       >
         <RotateCcw className="w-4 h-4" />
-      </button>
-
-      <div className="h-5 w-px bg-slate-700/60 mx-0.5" />
-
-      {/* Community Color toggle */}
-      <button
-        onClick={() => setColorByCommunity(!colorByCommunity)}
-        title={colorByCommunity ? "Color by Status" : "Color by Louvain Community"}
-        className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-lg font-medium transition ${
-          colorByCommunity
-            ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50'
-            : 'hover:bg-slate-800 text-slate-300 hover:text-white'
-        }`}
-      >
-        <Palette className="w-3.5 h-3.5" />
-        <span>{colorByCommunity ? 'Communities' : 'Status'}</span>
       </button>
 
       {/* Reset highlights */}
       <button
         onClick={handleReset}
         title="Clear Highlights & Filter"
-        className="px-2 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition"
+        className="px-2 py-1 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition cursor-pointer"
       >
         Reset
       </button>
 
-      <div className="h-5 w-px bg-slate-700/60 mx-0.5" />
+      <div className="h-5 w-px bg-slate-200 mx-0.5" />
 
       {/* Export dropdown */}
       <div className="relative">
         <button
           onClick={() => setShowExportMenu(!showExportMenu)}
-          className="flex items-center gap-1 p-1.5 hover:bg-slate-800 rounded-lg transition text-slate-300 hover:text-white"
+          className="flex items-center gap-1 p-1.5 hover:bg-slate-100 rounded-lg transition text-slate-600 hover:text-slate-900 cursor-pointer"
           title="Export Graph Image"
         >
           <Download className="w-4 h-4" />
         </button>
 
         {showExportMenu && (
-          <div className="absolute left-0 mt-2 w-36 bg-slate-900 border border-slate-700 rounded-lg shadow-xl py-1 z-20">
+          <div className="absolute left-0 mt-2 w-36 bg-white border border-slate-200 rounded-lg shadow-xl py-1 z-20">
             <button
               onClick={() => {
                 setShowExportMenu(false);
                 onExportPNG?.();
               }}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-200 hover:bg-slate-800 hover:text-white flex items-center gap-2"
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-slate-900 flex items-center gap-2 cursor-pointer"
             >
-              <Share2 className="w-3.5 h-3.5 text-blue-400" /> Export PNG
+              <Share2 className="w-3.5 h-3.5 text-blue-600" /> Export PNG
             </button>
             <button
               onClick={() => {
                 setShowExportMenu(false);
                 onExportSVG?.();
               }}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-200 hover:bg-slate-800 hover:text-white flex items-center gap-2"
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-slate-900 flex items-center gap-2 cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5 text-purple-400" /> Export SVG
+              <Download className="w-3.5 h-3.5 text-purple-600" /> Export SVG
             </button>
           </div>
         )}
@@ -198,7 +179,7 @@ export function GraphToolbar({
         <button
           onClick={onToggleFullscreen}
           title={isFullscreen ? "Exit Fullscreen" : "Fullscreen View"}
-          className="p-1.5 hover:bg-slate-800 rounded-lg transition text-slate-300 hover:text-white"
+          className="p-1.5 hover:bg-slate-100 rounded-lg transition text-slate-600 hover:text-slate-900 cursor-pointer"
         >
           {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
         </button>

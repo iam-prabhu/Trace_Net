@@ -1,6 +1,7 @@
 import { apiClient } from './api';
 import type { Investigation, Finding, Note } from '../types/investigation.types';
 import type { ApiResponse } from '../types/index';
+import type { CollaboratorPresence } from '../store/collaboration.store';
 import { MOCK_INVESTIGATIONS, MOCK_FINDINGS, MOCK_NOTES } from './mock-data';
 
 let localInvestigations = [...MOCK_INVESTIGATIONS];
@@ -66,18 +67,21 @@ export async function createInvestigation(data: Partial<Investigation>): Promise
 }
 
 export async function updateInvestigation(id: string, data: Partial<Investigation>): Promise<Investigation> {
+  let updatedInv: Investigation | null = null;
   try {
     const res = await apiClient.put<ApiResponse<Investigation>>(`/investigations/${id}`, data);
     if (res.data?.data) {
-      return res.data.data;
+      updatedInv = res.data.data;
     }
   } catch (err) {
     console.warn('API /investigations update failed, updating locally', err);
   }
   localInvestigations = localInvestigations.map(inv =>
-    inv.id === id ? { ...inv, ...data, updatedAt: new Date().toISOString() } : inv
+    inv.id === id || (updatedInv && inv.id === updatedInv.id)
+      ? { ...inv, ...data, ...(updatedInv || {}), updatedAt: new Date().toISOString() }
+      : inv
   );
-  return getInvestigation(id);
+  return updatedInv || getInvestigation(id);
 }
 
 export async function deleteInvestigation(id: string): Promise<void> {
@@ -165,4 +169,16 @@ export async function createNote(data: Partial<Note>): Promise<Note> {
   };
   localNotes.push(newNote);
   return newNote;
+}
+
+export async function getInvestigationMembers(id: string): Promise<CollaboratorPresence[]> {
+  try {
+    const res = await apiClient.get<ApiResponse<CollaboratorPresence[]>>(`/investigations/${id}/members`);
+    if (res.data?.data) {
+      return res.data.data;
+    }
+  } catch (err) {
+    console.warn('API /investigations/:id/members failed', err);
+  }
+  return [];
 }

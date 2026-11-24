@@ -1,42 +1,65 @@
 import { Radio } from 'lucide-react';
-import { useCollaborationStore } from '../../store/collaboration.store';
+import { useCollaboration } from '../../hooks/useCollaboration';
+import { useAuthStore } from '../../store/auth.store';
 
 interface CollaboratorPresenceProps {
   investigationId: string;
 }
 
-export function CollaboratorPresence({ investigationId: _investigationId }: CollaboratorPresenceProps) {
-  const { collaborators } = useCollaborationStore();
+export function CollaboratorPresence({ investigationId }: CollaboratorPresenceProps) {
+  const { collaborators } = useCollaboration(investigationId);
+  const currentUser = useAuthStore((s) => s.user);
 
-  const demoActiveUsers = collaborators.length > 0 ? collaborators : [
-    { userId: 'u-1', email: 'sarah.lin@nexusfraud.io', name: 'Sarah Lin', color: '#3B82F6', activity: 'Viewing Subgraph' },
-    { userId: 'u-2', email: 'marcus.vance@nexusfraud.io', name: 'Marcus Vance', color: '#10B981', activity: 'Editing Notes' },
-  ];
+  // If socket hasn't registered self yet, display current logged-in investigator
+  const displayUsers =
+    collaborators.length > 0
+      ? collaborators
+      : currentUser
+      ? [
+          {
+            userId: currentUser.id,
+            email: currentUser.email,
+            name: currentUser.name || currentUser.email.split('@')[0],
+            color: '#3B82F6',
+            activity: 'Viewing Canvas',
+            role: currentUser.role,
+          },
+        ]
+      : [];
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-slate-900/90 rounded-2xl border border-slate-800 text-xs">
-      <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-semibold text-[11px] border border-emerald-500/20">
-        <Radio className="w-3 h-3 animate-pulse" />
+    <div className="flex items-center gap-2 p-1.5 bg-white rounded-2xl border border-slate-200 text-xs shadow-xs">
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 font-semibold text-[11px] border border-emerald-200 shrink-0">
+        <Radio className="w-3 h-3 text-emerald-600 animate-pulse" />
         <span>Live Presence</span>
+        <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-emerald-200/60 text-emerald-800 text-[10px] font-mono">
+          {displayUsers.length}
+        </span>
       </div>
 
-      <div className="flex items-center gap-1.5">
-        {demoActiveUsers.map((u) => (
-          <div
-            key={u.userId}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-200"
-            title={`${u.email} (${(u as any).activity || 'Active'})`}
-          >
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: u.color || '#3B82F6' }}
-            />
-            <span className="font-semibold text-xs">{(u as any).name || u.email.split('@')[0]}</span>
-            <span className="text-[10px] text-slate-400 hidden sm:inline">
-              • {(u as any).activity || 'Viewing'}
-            </span>
-          </div>
-        ))}
+      <div className="flex items-center gap-1.5 overflow-x-auto max-w-xs sm:max-w-md py-0.5">
+        {displayUsers.map((u) => {
+          const isMe = currentUser && (u.userId === currentUser.id || u.email === currentUser.email);
+          return (
+            <div
+              key={u.userId || u.socketId || u.email}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 shrink-0 transition"
+              title={`${u.email} (${u.activity || 'Active'})`}
+            >
+              <span
+                className="w-2 h-2 rounded-full ring-2 ring-white shrink-0"
+                style={{ backgroundColor: u.color || '#3B82F6' }}
+              />
+              <span className="font-semibold text-xs text-slate-900">
+                {u.name || u.email.split('@')[0]}
+                {isMe ? ' (You)' : ''}
+              </span>
+              <span className="text-[10px] text-slate-500 hidden md:inline">
+                • {u.activity || 'Viewing'}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

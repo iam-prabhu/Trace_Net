@@ -4,12 +4,338 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #0b0f19;
-  color: #f1f5f9;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Scrollbar Styling for Light Theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========================================================
+   LIGHT THEME GLOBAL UTILITY ADAPTATIONS
+   Comprehensive overrides converting dark theme cards, panels,
+   borders, buttons, forms, and inputs into clean light mode.
+   ======================================================== */
+
+/* Hardcoded dark hex backgrounds */
+.bg-\[\#070b14\],
+.bg-\[\#070d1e\],
+.bg-\[\#090f1d\],
+.bg-\[\#091126\],
+.bg-\[\#091126\]\/90,
+.bg-\[\#091126\]\/60 {
+  background-color: #ffffff !important;
+}
+
+/* Main content workspace background */
+main.bg-\[\#090f1d\],
+main {
+  background-color: #f8fafc !important;
+}
+
+/* Panels, cards and elevated surfaces */
+.bg-slate-950,
+[class*="bg-slate-950"] {
+  background-color: #f8fafc !important;
+}
+
+.bg-slate-900,
+[class*="bg-slate-900"] {
+  background-color: #ffffff !important;
+}
+
+.bg-slate-800,
+[class*="bg-slate-800"] {
+  background-color: #f8fafc !important;
+}
+
+.bg-slate-700,
+[class*="bg-slate-700"] {
+  background-color: #f1f5f9 !important;
+}
+
+/* Hover background states on cards/buttons */
+.hover\:bg-slate-800:hover,
+.hover\:bg-slate-700:hover,
+[class*="hover:bg-slate-800"]:hover,
+[class*="hover:bg-slate-700"]:hover {
+  background-color: #e2e8f0 !important;
+}
+
+.hover\:bg-slate-900:hover,
+[class*="hover:bg-slate-900"]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* All borders across cards, dividers, panels */
+.border-slate-800,
+.border-slate-700,
+[class*="border-slate-800"],
+[class*="border-slate-700"],
+[class*="border-slate-600"] {
+  border-color: #e2e8f0 !important;
+}
+
+.divide-slate-800,
+.divide-slate-700,
+[class*="divide-slate-800"],
+[class*="divide-slate-700"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* Typography hierarchy in light mode */
+.text-slate-100,
+.text-slate-200 {
+  color: #1e293b !important;
+}
+
+.text-slate-300 {
+  color: #334155 !important;
+}
+
+.text-slate-400,
+.text-slate-500 {
+  color: #64748b !important;
+}
+
+/* In light theme, headings and card labels originally styled text-white map to dark slate (excluding any buttons) */
+h1.text-white,
+h2.text-white,
+h3.text-white,
+h4.text-white,
+td.text-white,
+.tracking-tight.text-white {
+  color: #0f172a !important;
+}
+
+/* Buttons that were dark slate in dark mode */
+button[class*="bg-slate-800"],
+button[class*="bg-slate-700"],
+button[class*="bg-slate-900"] {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+
+button[class*="bg-slate-800"]:hover,
+button[class*="bg-slate-700"]:hover,
+button[class*="bg-slate-900"]:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Form inputs, textareas, selects */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #3b82f6 !important;
+  background-color: #ffffff !important;
+  outline: 2px solid transparent !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Checkboxes and Range Sliders */
+input[type="checkbox"] {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+input[type="range"] {
+  accent-color: #2563eb !important;
+}
+
+/* Solid action buttons, badges, and gradient avatars keep high-contrast white text */
+.bg-blue-600,
+.bg-blue-600 *,
+.bg-blue-500,
+.bg-blue-500 *,
+.bg-red-600,
+.bg-red-600 *,
+.bg-purple-600,
+.bg-purple-600 *,
+.bg-indigo-600,
+.bg-indigo-600 *,
+.bg-emerald-600,
+.bg-emerald-600 *,
+.bg-rose-600,
+.bg-rose-600 *,
+[class*="bg-gradient-"],
+[class*="bg-gradient-"] *,
+button.bg-blue-600,
+button.bg-blue-600 *,
+button.bg-blue-700,
+button.bg-blue-700 *,
+button.bg-blue-500,
+button.bg-blue-500 *,
+button[class*="bg-blue-600"],
+button[class*="bg-blue-600"] *,
+button[class*="bg-blue-700"],
+button[class*="bg-blue-700"] *,
+button[class*="bg-blue-500"],
+button[class*="bg-blue-500"] *,
+button.bg-red-600,
+button.bg-red-600 *,
+button.bg-red-700,
+button.bg-red-700 *,
+button.bg-red-500,
+button.bg-red-500 *,
+button[class*="bg-red-600"],
+button[class*="bg-red-600"] *,
+button[class*="bg-red-700"],
+button[class*="bg-red-700"] *,
+button[class*="bg-red-500"],
+button[class*="bg-red-500"] *,
+button.bg-emerald-600,
+button.bg-emerald-600 *,
+button.bg-emerald-700,
+button.bg-emerald-700 *,
+button.bg-emerald-500,
+button.bg-emerald-500 *,
+button[class*="bg-emerald-600"],
+button[class*="bg-emerald-600"] *,
+button[class*="bg-emerald-700"],
+button[class*="bg-emerald-700"] *,
+button[class*="bg-emerald-500"],
+button[class*="bg-emerald-500"] *,
+button.bg-purple-600,
+button.bg-purple-600 *,
+button.bg-purple-700,
+button.bg-purple-700 *,
+button.bg-purple-500,
+button.bg-purple-500 *,
+button[class*="bg-purple-600"],
+button[class*="bg-purple-600"] *,
+button[class*="bg-purple-700"],
+button[class*="bg-purple-700"] *,
+button[class*="bg-purple-500"],
+button[class*="bg-purple-500"] *,
+button.bg-indigo-600,
+button.bg-indigo-600 *,
+button[class*="bg-indigo-600"],
+button[class*="bg-indigo-600"] *,
+span.bg-red-500,
+span.bg-blue-600 {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Explicit high-contrast text colors for soft buttons */
+button.bg-emerald-50,
+button.bg-emerald-50 *,
+button[class~="bg-emerald-50"],
+button[class~="bg-emerald-50"] *,
+button.bg-emerald-100,
+button.bg-emerald-100 *,
+button[class~="bg-emerald-100"],
+button[class~="bg-emerald-100"] * {
+  color: #047857 !important;
+}
+
+button.bg-blue-50,
+button.bg-blue-50 *,
+button[class~="bg-blue-50"],
+button[class~="bg-blue-50"] *,
+button.bg-blue-100,
+button.bg-blue-100 *,
+button[class~="bg-blue-100"],
+button[class~="bg-blue-100"] * {
+  color: #1d4ed8 !important;
+}
+
+button.bg-amber-50,
+button.bg-amber-50 *,
+button[class~="bg-amber-50"],
+button[class~="bg-amber-50"] *,
+button.bg-amber-100,
+button.bg-amber-100 *,
+button[class~="bg-amber-100"],
+button[class~="bg-amber-100"] * {
+  color: #b45309 !important;
+}
+
+button.bg-red-50,
+button.bg-red-50 *,
+button[class~="bg-red-50"],
+button[class~="bg-red-50"] *,
+button.bg-red-100,
+button.bg-red-100 *,
+button[class~="bg-red-100"],
+button[class~="bg-red-100"] * {
+  color: #b91c1c !important;
+}
+
+/* Status pills and soft badges contrast in light mode */
+.bg-blue-500\/10,
+.bg-blue-500\/20 {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-color: #bfdbfe !important;
+}
+
+.bg-red-500\/10,
+.bg-red-500\/20 {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+  border-color: #fecaca !important;
+}
+
+.bg-amber-500\/10,
+.bg-amber-500\/20 {
+  background-color: #fffbeb !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+}
+
+.bg-emerald-500\/10,
+.bg-emerald-500\/20 {
+  background-color: #ecfdf5 !important;
+  color: #047857 !important;
+  border-color: #a7f3d0 !important;
+}
+
+.bg-purple-500\/10,
+.bg-purple-500\/20 {
+  background-color: #faf5ff !important;
+  color: #6b21a8 !important;
+  border-color: #e9d5ff !important;
+}
+
+.bg-rose-500\/20 {
+  background-color: #fff1f2 !important;
+  color: #be123c !important;
+  border-color: #fecdd3 !important;
 }

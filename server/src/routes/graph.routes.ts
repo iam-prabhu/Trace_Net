@@ -21,5 +21,7 @@ router.post('/dfs', graphController.runDFS);
 // Analysis
 router.post('/cycles', graphController.detectCycles);
 router.post('/communities', graphController.detectCommunities);
+router.post('/gcn', graphController.runGCN);
+router.get('/gcn', graphController.runGCN);
 
 export default router;

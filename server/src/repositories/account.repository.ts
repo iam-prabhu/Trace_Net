@@ -235,8 +235,12 @@ export class AccountRepository {
       id: acc.id,
     };
 
-    if (partial.status === 'FLAGGED' || (partial.riskScore && partial.riskScore > 75)) {
+    if (partial.isFlagged !== undefined) {
+      updated.isFlagged = partial.isFlagged;
+    } else if (partial.status === 'FLAGGED' || (partial.riskScore && partial.riskScore > 75)) {
       updated.isFlagged = true;
+    } else if (partial.status === 'ACTIVE' || partial.status === 'CLEARED') {
+      updated.isFlagged = false;
     }
 
     inMemoryStore.accounts.set(accountId, updated);

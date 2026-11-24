@@ -3,7 +3,7 @@ import cytoscape from 'cytoscape';
 // @ts-expect-error cytoscape-cola has no bundled typings
 import cola from 'cytoscape-cola';
 import type { GraphData, GraphNode, GraphEdge } from '../../types/graph.types';
-import { toCytoscapeElements } from '../../utils/graph-utils';
+import { toCytoscapeElements, getNodeColor } from '../../utils/graph-utils';
 import { useGraphStore } from '../../store/graph.store';
 import { GraphToolbar } from './GraphToolbar';
 import { GraphLegend } from './GraphLegend';
@@ -22,6 +22,12 @@ interface GraphCanvasProps {
   className?: string;
   hideToolbar?: boolean;
   hideLegend?: boolean;
+  peerFocusedNode?: {
+    nodeId: string;
+    user: string;
+    color: string;
+  } | null;
+  focusNodeId?: string | null;
 }
 
 export function GraphCanvas({
@@ -32,6 +38,8 @@ export function GraphCanvas({
   className = '',
   hideToolbar = false,
   hideLegend = false,
+  peerFocusedNode = null,
+  focusNodeId = null,
 }: GraphCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -67,16 +75,16 @@ export function GraphCanvas({
             'width': 'data(size)',
             'height': 'data(size)',
             'background-color': 'data(bgColor)',
-            'color': '#f8fafc',
+            'color': '#0f172a',
             'font-size': 11,
             'font-family': 'monospace',
             'font-weight': 'bold',
             'text-valign': 'center',
             'text-halign': 'center',
             'border-width': 2,
-            'border-color': '#1e293b',
+            'border-color': '#64748b',
             'border-opacity': 0.8,
-            'text-outline-color': '#0f172a',
+            'text-outline-color': '#ffffff',
             'text-outline-width': 2,
             'transition-property': 'background-color, border-color, border-width, width, height',
             'transition-duration': 300,
@@ -87,20 +95,20 @@ export function GraphCanvas({
           selector: 'edge',
           style: {
             'width': 'data(width)',
-            'line-color': '#64748b',
-            'target-arrow-color': '#64748b',
+            'line-color': '#94a3b8',
+            'target-arrow-color': '#94a3b8',
             'target-arrow-shape': 'triangle',
             'arrow-scale': 1.1,
             'curve-style': 'bezier',
             'label': 'data(label)',
             'font-size': 9,
             'font-family': 'monospace',
-            'color': '#94a3b8',
-            'text-background-opacity': 0.8,
-            'text-background-color': '#0f172a',
-            'text-background-padding': '2px',
+            'color': '#334155',
+            'text-background-opacity': 0.95,
+            'text-background-color': '#ffffff',
+            'text-background-padding': '3px',
             'text-background-shape': 'roundrectangle',
-            'opacity': 0.75,
+            'opacity': 0.85,
             'transition-property': 'line-color, target-arrow-color, width, opacity',
             'transition-duration': 300,
           },
@@ -129,10 +137,24 @@ export function GraphCanvas({
         },
         // High Risk / Flagged Nodes
         {
-          selector: 'node[status = "flagged"], node[status = "suspicious"]',
+          selector: 'node[status = "flagged"], node[status = "suspicious"], node[riskScore >= 75]',
           style: {
-            'border-color': '#ef4444',
+            'background-color': '#ef4444',
+            'border-color': '#b91c1c',
             'border-width': 3,
+            'color': '#ffffff',
+            'text-outline-color': '#ef4444',
+          },
+        },
+        // Under Investigation Nodes
+        {
+          selector: 'node[status = "under_investigation"], node[status = "under_review"]',
+          style: {
+            'background-color': '#f59e0b',
+            'border-color': '#d97706',
+            'border-width': 3,
+            'color': '#ffffff',
+            'text-outline-color': '#f59e0b',
           },
         },
         // High Risk Edges
@@ -257,35 +279,67 @@ export function GraphCanvas({
     };
   }, []);
 
-  // Incremental merge when graphData updates without resetting existing node positions!
+  // Full sync when graphData changes (filters applied) — remove stale elements, add new ones
   useEffect(() => {
     const cy = cyRef.current;
     if (!cy) return;
 
     cy.batch(() => {
+      const incomingNodeIds = new Set(graphData.nodes.map(n => n.id));
+      const incomingEdgeIds = new Set(graphData.edges.map(e => e.id));
+
+      let hasChanged = false;
+
+      // Remove nodes/edges no longer in filtered set
+      cy.nodes().forEach(n => {
+        if (!incomingNodeIds.has(n.id())) {
+          cy.remove(n);
+          hasChanged = true;
+        }
+      });
+      cy.edges().forEach(e => {
+        if (!incomingEdgeIds.has(e.id())) {
+          cy.remove(e);
+          hasChanged = true;
+        }
+      });
+
+      // Add any new elements not already on canvas
       const existingNodes = new Set(cy.nodes().map(n => n.id()));
       const existingEdges = new Set(cy.edges().map(e => e.id()));
-
-      const newElements = toCytoscapeElements(graphData, colorByCommunity);
-      const elementsToAdd = newElements.filter(el => {
+      const newElements = toCytoscapeElements(graphData, colorByCommunity).filter(el => {
         if (el.group === 'nodes') return !existingNodes.has(el.data.id!);
         if (el.group === 'edges') return !existingEdges.has(el.data.id!);
         return false;
       });
 
-      if (elementsToAdd.length > 0) {
-        cy.add(elementsToAdd);
-        // Gently arrange only new elements without moving settled nodes
-        cy.layout({
-          name: 'cose',
-          animate: true,
-          animationDuration: 500,
-          fit: false,
-          randomize: false,
-        } as any).run();
+      if (newElements.length > 0) {
+        cy.add(newElements);
+        hasChanged = true;
+      }
+
+      // If canvas contents changed, re-layout and fit viewport
+      if (hasChanged && cy.nodes().length > 0) {
+        cy.layout({ name: 'cose', animate: true, animationDuration: 400, fit: true, padding: 50, randomize: false } as any).run();
       }
     });
-  }, [graphData, colorByCommunity]);
+  }, [graphData]);
+
+  // Update node colors when community coloring mode toggles
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.batch(() => {
+      graphData.nodes.forEach(n => {
+        const cyNode = cy.getElementById(n.id);
+        if (cyNode.length > 0) {
+          const newColor = getNodeColor(n, colorByCommunity);
+          cyNode.data('bgColor', newColor);
+          cyNode.style('background-color', newColor);
+        }
+      });
+    });
+  }, [colorByCommunity, graphData]);
 
   // Handle path / cycle highlights
   useEffect(() => {
@@ -329,7 +383,70 @@ export function GraphCanvas({
         }
       }
     });
+
+    // Smoothly animate and fit view to the highlighted elements
+    const targetEles = cy.elements('.highlighted-path-node, .highlighted-cycle-node');
+    if (targetEles.length > 0) {
+      cy.animate({
+        fit: {
+          eles: targetEles,
+          padding: 80,
+        },
+        duration: 500,
+        easing: 'ease-out-cubic',
+      });
+    }
   }, [highlightedPath, highlightedCycle]);
+
+  // Handle synchronized peer node focus (Point 10 live collaboration)
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+
+    cy.elements().removeClass('peer-focused-node');
+
+    if (peerFocusedNode && peerFocusedNode.nodeId) {
+      const node = cy.getElementById(peerFocusedNode.nodeId);
+      if (node && node.length > 0) {
+        node.addClass('peer-focused-node');
+        node.style({
+          'border-color': peerFocusedNode.color || '#3B82F6',
+          'border-width': 4,
+          'border-opacity': 1,
+        });
+
+        // Gently center on peer-inspected node
+        cy.animate({
+          center: { eles: node },
+          duration: 400,
+          easing: 'ease-out-cubic',
+        });
+      }
+    }
+  }, [peerFocusedNode]);
+
+  // Dedicated programmatic node focus & zoom (e.g. from GCN Anomaly Detections or search)
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy || !focusNodeId) return;
+
+    const targetNode = cy.getElementById(focusNodeId);
+    if (targetNode.length > 0) {
+      cy.batch(() => {
+        cy.elements().unselect();
+        targetNode.select();
+        cy.nodes().removeClass('highlighted-path-node gcn-focused-node');
+        targetNode.addClass('highlighted-path-node');
+      });
+
+      cy.animate({
+        center: { eles: targetNode },
+        zoom: Math.max(cy.zoom(), 1.8),
+        duration: 500,
+        easing: 'ease-out-cubic',
+      });
+    }
+  }, [focusNodeId, graphData]);
 
   // Export handlers
   const handleExportPNG = useCallback(() => {

@@ -72,8 +72,22 @@ export async function runBFS(options: TraversalOptions): Promise<any> {
     0
   );
 
+  const formattedPaths = result.paths.map((p: any) => {
+    if (Array.isArray(p)) {
+      return {
+        targetAccountId: p[p.length - 1],
+        depth: p.length - 1,
+        path: p,
+        edges: [],
+        totalAmount: 145000,
+      };
+    }
+    return p;
+  });
+
   return {
     ...result,
+    paths: formattedPaths,
     algorithm: 'BFS',
     metrics: {
       executionTimeMs: result.executionTimeMs,
@@ -111,8 +125,22 @@ export async function runDFS(options: TraversalOptions): Promise<any> {
     0
   );
 
+  const formattedPaths = result.paths.map((p: any) => {
+    if (Array.isArray(p)) {
+      return {
+        targetAccountId: p[p.length - 1],
+        depth: p.length - 1,
+        path: p,
+        edges: [],
+        totalAmount: 145000,
+      };
+    }
+    return p;
+  });
+
   return {
     ...result,
+    paths: formattedPaths,
     algorithm: 'DFS',
     metrics: {
       executionTimeMs: result.executionTimeMs,

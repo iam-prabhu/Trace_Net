@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+  svg { width: 1500px; height: 820px; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1500 820" xmlns="http://www.w3.org/2000/svg" style="background: #ffffff; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <!-- Card Drop Shadow -->
+    <filter id="shadow" x="-5%" y="-3%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-opacity="0.07" flood-color="#0f172a"/>
+    </filter>
+    <filter id="badge-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15" flood-color="#000000"/>
+    </filter>
+
+    <!-- Header Gradient -->
+    <linearGradient id="header-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Step Gradients -->
+    <linearGradient id="grad-step1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="grad-step2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="grad-step3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#faf5ff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="grad-step4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fdf4ff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="grad-step5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ecfdf5"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+
+    <!-- Arrow Marker -->
+    <marker id="flow-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 1 1 L 9 5 L 1 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1500" height="820" fill="#f8fafc"/>
+
+  <!-- Top Title Banner -->
+  <g transform="translate(40, 25)">
+    <rect width="1420" height="74" rx="12" fill="url(#header-grad)" filter="url(#shadow)"/>
+    <text x="710" y="42" font-size="22" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">END-TO-END FRAUD INVESTIGATION WORKFLOW</text>
+    <text x="710" y="63" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle">Operational Pipeline: Ingestion → Graph Modeling → Multi-Pillar Detection → Visual Forensics → Collaborative Resolution</text>
+  </g>
+
+  <!-- ==================== STEP 1: INGESTION ==================== -->
+  <g transform="translate(40, 130)" filter="url(#shadow)">
+    <!-- Main Box -->
+    <rect width="265" height="560" rx="14" fill="url(#grad-step1)" stroke="#3b82f6" stroke-width="2"/>
+    <!-- Step Badge -->
+    <rect x="20" y="-14" width="90" height="28" rx="14" fill="#2563eb" filter="url(#badge-shadow)"/>
+    <text x="65" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">STEP 01</text>
+    
+    <!-- Title Area -->
+    <text x="132" y="42" font-size="17" font-weight="800" fill="#1e3a8a" text-anchor="middle">Data Ingestion</text>
+    <text x="132" y="62" font-size="11.5" font-weight="600" fill="#64748b" text-anchor="middle">Raw Transaction Feeds</text>
+    <line x1="25" y1="76" x2="240" y2="76" stroke="#bfdbfe" stroke-width="1.5"/>
+
+    <!-- Section 1: Inputs -->
+    <rect x="18" y="92" width="229" height="110" rx="8" fill="#ffffff" stroke="#dbeafe" stroke-width="1.2"/>
+    <text x="28" y="112" font-size="12" font-weight="700" fill="#1e40af">Source Data Streams</text>
+    <text x="28" y="132" font-size="11" fill="#475569">• Core banking transactions</text>
+    <text x="28" y="150" font-size="11" fill="#475569">• Cross-border SWIFT logs</text>
+    <text x="28" y="168" font-size="11" fill="#475569">• Shell company registries</text>
+    <text x="28" y="186" font-size="11" fill="#475569">• Crypto / fiat on-off ramps</text>
+
+    <!-- Section 2: Validation -->
+    <rect x="18" y="218" width="229" height="120" rx="8" fill="#ffffff" stroke="#dbeafe" stroke-width="1.2"/>
+    <text x="28" y="238" font-size="12" font-weight="700" fill="#1e40af">Cleaning &amp; Normalization</text>
+    <text x="28" y="258" font-size="11" fill="#475569">• ISO 20022 message parsing</text>
+    <text x="28" y="276" font-size="11" fill="#475569">• Account KYC deduplication</text>
+    <text x="28" y="294" font-size="11" fill="#475569">• Currency conversion (USD)</text>
+    <text x="28" y="312" font-size="11" fill="#475569">• Timestamp synchronization</text>
+
+    <!-- Section 3: Ingestion Buffer -->
+    <rect x="18" y="354" width="229" height="100" rx="8" fill="#ffffff" stroke="#dbeafe" stroke-width="1.2"/>
+    <text x="28" y="374" font-size="12" font-weight="700" fill="#1e40af">Streaming Pipeline</text>
+    <text x="28" y="394" font-size="11" fill="#475569">• High-throughput batch import</text>
+    <text x="28" y="412" font-size="11" fill="#475569">• Kafka / Event queue buffer</text>
+    <text x="28" y="430" font-size="11" fill="#475569">• Zero record loss validation</text>
+
+    <!-- Tag -->
+    <rect x="18" y="495" width="229" height="34" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1"/>
+    <text x="132" y="517" font-size="11" font-weight="700" fill="#1d4ed8" text-anchor="middle">⚡ Sub-Second Ingestion</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="315" y1="410" x2="335" y2="410" stroke="#64748b" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+
+  <!-- ==================== STEP 2: GRAPH MODELING ==================== -->
+  <g transform="translate(345, 130)" filter="url(#shadow)">
+    <!-- Main Box -->
+    <rect width="265" height="560" rx="14" fill="url(#grad-step2)" stroke="#0284c7" stroke-width="2"/>
+    <!-- Step Badge -->
+    <rect x="20" y="-14" width="90" height="28" rx="14" fill="#0284c7" filter="url(#badge-shadow)"/>
+    <text x="65" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">STEP 02</text>
+    
+    <!-- Title Area -->
+    <text x="132" y="42" font-size="17" font-weight="800" fill="#0369a1" text-anchor="middle">Graph Modeling</text>
+    <text x="132" y="62" font-size="11.5" font-weight="600" fill="#64748b" text-anchor="middle">Topology Construction</text>
+    <line x1="25" y1="76" x2="240" y2="76" stroke="#bae6fd" stroke-width="1.5"/>
+
+    <!-- Section 1: Entities -->
+    <rect x="18" y="92" width="229" height="110" rx="8" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.2"/>
+    <text x="28" y="112" font-size="12" font-weight="700" fill="#0369a1">Node Abstraction</text>
+    <text x="28" y="132" font-size="11" fill="#475569">• Bank accounts (Retail/Biz)</text>
+    <text x="28" y="150" font-size="11" fill="#475569">• Beneficial owners &amp; directors</text>
+    <text x="28" y="168" font-size="11" fill="#475569">• Offshore corporate entities</text>
+    <text x="28" y="186" font-size="11" fill="#475569">• Digital wallets &amp; devices</text>
+
+    <!-- Section 2: Relationships -->
+    <rect x="18" y="218" width="229" height="120" rx="8" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.2"/>
+    <text x="28" y="238" font-size="12" font-weight="700" fill="#0369a1">Directed Edge Mapping</text>
+    <text x="28" y="258" font-size="11" fill="#475569">• SENT_PAYMENT (Amount, Time)</text>
+    <text x="28" y="276" font-size="11" fill="#475569">• SHARES_DEVICE / IP_LOGIN</text>
+    <text x="28" y="294" font-size="11" fill="#475569">• BENEFICIAL_OWNER_OF</text>
+    <text x="28" y="312" font-size="11" fill="#475569">• Edge weight = transaction flow</text>
+
+    <!-- Section 3: Dual Storage -->
+    <rect x="18" y="354" width="229" height="100" rx="8" fill="#ffffff" stroke="#e0f2fe" stroke-width="1.2"/>
+    <text x="28" y="374" font-size="12" font-weight="700" fill="#0369a1">Graph Storage Core</text>
+    <text x="28" y="394" font-size="11" fill="#475569">• Neo4j persistent database</text>
+    <text x="28" y="412" font-size="11" fill="#475569">• Typed in-memory adjacency</text>
+    <text x="28" y="430" font-size="11" fill="#475569">• Instant ego-network queries</text>
+
+    <!-- Tag -->
+    <rect x="18" y="495" width="229" height="34" rx="6" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="1"/>
+    <text x="132" y="517" font-size="11" font-weight="700" fill="#0284c7" text-anchor="middle">🌐 Heterogeneous Property Graph</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="620" y1="410" x2="640" y2="410" stroke="#64748b" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+
+  <!-- ==================== STEP 3: DETECTION CORE ==================== -->
+  <g transform="translate(650, 130)" filter="url(#shadow)">
+    <!-- Main Box -->
+    <rect width="265" height="560" rx="14" fill="url(#grad-step3)" stroke="#7c3aed" stroke-width="2"/>
+    <!-- Step Badge -->
+    <rect x="20" y="-14" width="90" height="28" rx="14" fill="#7c3aed" filter="url(#badge-shadow)"/>
+    <text x="65" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">STEP 03</text>
+    
+    <!-- Title Area -->
+    <text x="132" y="42" font-size="17" font-weight="800" fill="#5b21b6" text-anchor="middle">Detection Brain</text>
+    <text x="132" y="62" font-size="11.5" font-weight="600" fill="#64748b" text-anchor="middle">Multi-Pillar Algorithms</text>
+    <line x1="25" y1="76" x2="240" y2="76" stroke="#ddd6fe" stroke-width="1.5"/>
+
+    <!-- Section 1: Cycle Engine -->
+    <rect x="18" y="92" width="229" height="110" rx="8" fill="#ffffff" stroke="#ede9fe" stroke-width="1.2"/>
+    <text x="28" y="112" font-size="12" font-weight="700" fill="#6d28d9">Cycle &amp; Mule Rings</text>
+    <text x="28" y="132" font-size="11" fill="#475569">• Johnson's Cycle Finder (14.9 ms)</text>
+    <text x="28" y="150" font-size="11" fill="#475569">• Tarjan's SCC Decomp (0.86 ms)</text>
+    <text x="28" y="168" font-size="11" fill="#475569">• Rapid BFS/DFS Pathing (0.14 ms)</text>
+    <text x="28" y="186" font-size="11" fill="#475569">• Circular wash-trading detection</text>
+
+    <!-- Section 2: Community Engine -->
+    <rect x="18" y="218" width="229" height="120" rx="8" fill="#ffffff" stroke="#ede9fe" stroke-width="1.2"/>
+    <text x="28" y="238" font-size="12" font-weight="700" fill="#6d28d9">Syndicate Clustering</text>
+    <text x="28" y="258" font-size="11" fill="#475569">• Louvain Modularity (37.4 ms)</text>
+    <text x="28" y="276" font-size="11" fill="#475569">• High-density crime clusters</text>
+    <text x="28" y="294" font-size="11" fill="#475569">• Smurfing &amp; fan-in / fan-out</text>
+    <text x="28" y="312" font-size="11" fill="#475569">• Cross-entity coordination</text>
+
+    <!-- Section 3: ML Engine -->
+    <rect x="18" y="354" width="229" height="100" rx="8" fill="#ffffff" stroke="#ede9fe" stroke-width="1.2"/>
+    <text x="28" y="374" font-size="12" font-weight="700" fill="#6d28d9">Deep Graph Learning</text>
+    <text x="28" y="394" font-size="11" fill="#475569">• Spectral GCN Neural Net (16.8 ms)</text>
+    <text x="28" y="412" font-size="11" fill="#475569">• Structural anomaly embedding</text>
+    <text x="28" y="430" font-size="11" fill="#475569">• 99.6% Accuracy / 0.976 F1</text>
+
+    <!-- Tag -->
+    <rect x="18" y="495" width="229" height="34" rx="6" fill="#faf5ff" stroke="#c4b5fd" stroke-width="1"/>
+    <text x="132" y="517" font-size="11" font-weight="700" fill="#7c3aed" text-anchor="middle">🧠 Sub-50ms Parallel Scoring</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="925" y1="410" x2="945" y2="410" stroke="#64748b" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+
+  <!-- ==================== STEP 4: VISUAL FORENSICS ==================== -->
+  <g transform="translate(955, 130)" filter="url(#shadow)">
+    <!-- Main Box -->
+    <rect width="265" height="560" rx="14" fill="url(#grad-step4)" stroke="#c026d3" stroke-width="2"/>
+    <!-- Step Badge -->
+    <rect x="20" y="-14" width="90" height="28" rx="14" fill="#c026d3" filter="url(#badge-shadow)"/>
+    <text x="65" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">STEP 04</text>
+    
+    <!-- Title Area -->
+    <text x="132" y="42" font-size="17" font-weight="800" fill="#86198f" text-anchor="middle">Visual Forensics</text>
+    <text x="132" y="62" font-size="11.5" font-weight="600" fill="#64748b" text-anchor="middle">Interactive Inspection</text>
+    <line x1="25" y1="76" x2="240" y2="76" stroke="#f5d0fe" stroke-width="1.5"/>
+
+    <!-- Section 1: 2D Canvas -->
+    <rect x="18" y="92" width="229" height="110" rx="8" fill="#ffffff" stroke="#fae8ff" stroke-width="1.2"/>
+    <text x="28" y="112" font-size="12" font-weight="700" fill="#a21caf">2D Graph Visualization</text>
+    <text x="28" y="132" font-size="11" fill="#475569">• Cytoscape.js canvas rendering</text>
+    <text x="28" y="150" font-size="11" fill="#475569">• CoSE &amp; Concentric layouts</text>
+    <text x="28" y="168" font-size="11" fill="#475569">• Color-coded risk tier badges</text>
+    <text x="28" y="186" font-size="11" fill="#475569">• Subgraph isolate &amp; expansion</text>
+
+    <!-- Section 2: 3D Geospatial -->
+    <rect x="18" y="218" width="229" height="120" rx="8" fill="#ffffff" stroke="#fae8ff" stroke-width="1.2"/>
+    <text x="28" y="238" font-size="12" font-weight="700" fill="#a21caf">3D Geospatial Globe</text>
+    <text x="28" y="258" font-size="11" fill="#475569">• Three.js / WebGL sphere</text>
+    <text x="28" y="276" font-size="11" fill="#475569">• Great-circle flight arc paths</text>
+    <text x="28" y="294" font-size="11" fill="#475569">• Offshore haven destination flags</text>
+    <text x="28" y="312" font-size="11" fill="#475569">• Multi-jurisdiction route replay</text>
+
+    <!-- Section 3: Time Scrubber -->
+    <rect x="18" y="354" width="229" height="100" rx="8" fill="#ffffff" stroke="#fae8ff" stroke-width="1.2"/>
+    <text x="28" y="374" font-size="12" font-weight="700" fill="#a21caf">Temporal Timeline</text>
+    <text x="28" y="394" font-size="11" fill="#475569">• Interactive playback scrubber</text>
+    <text x="28" y="412" font-size="11" fill="#475569">• Frame-by-frame fund dispersal</text>
+    <text x="28" y="430" font-size="11" fill="#475569">• Chronological fraud unfolding</text>
+
+    <!-- Tag -->
+    <rect x="18" y="495" width="229" height="34" rx="6" fill="#fdf4ff" stroke="#f0abfc" stroke-width="1"/>
+    <text x="132" y="517" font-size="11" font-weight="700" fill="#c026d3" text-anchor="middle">🔍 Dual-Mode Visual Proof</text>
+  </g>
+
+  <!-- Arrow 4 -> 5 -->
+  <line x1="1230" y1="410" x2="1250" y2="410" stroke="#64748b" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+
+  <!-- ==================== STEP 5: COLLABORATIVE RESOLUTION ==================== -->
+  <g transform="translate(1260, 130)" filter="url(#shadow)">
+    <!-- Main Box -->
+    <rect width="200" height="560" rx="14" fill="url(#grad-step5)" stroke="#10b981" stroke-width="2"/>
+    <!-- Step Badge -->
+    <rect x="20" y="-14" width="90" height="28" rx="14" fill="#059669" filter="url(#badge-shadow)"/>
+    <text x="65" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">STEP 05</text>
+    
+    <!-- Title Area -->
+    <text x="100" y="42" font-size="16" font-weight="800" fill="#065f46" text-anchor="middle">Resolution</text>
+    <text x="100" y="62" font-size="11.5" font-weight="600" fill="#64748b" text-anchor="middle">Collab &amp; SAR Filing</text>
+    <line x1="20" y1="76" x2="180" y2="76" stroke="#a7f3d0" stroke-width="1.5"/>
+
+    <!-- Section 1: Live Sync -->
+    <rect x="14" y="92" width="172" height="110" rx="8" fill="#ffffff" stroke="#d1fae5" stroke-width="1.2"/>
+    <text x="22" y="112" font-size="11.5" font-weight="700" fill="#047857">Live Team Sync</text>
+    <text x="22" y="132" font-size="10.5" fill="#475569">• Socket.IO viewport sync</text>
+    <text x="22" y="150" font-size="10.5" fill="#475569">• Latency: 2.73 ms</text>
+    <text x="22" y="168" font-size="10.5" fill="#475569">• Shared node pinning</text>
+    <text x="22" y="186" font-size="10.5" fill="#475569">• Multi-analyst presence</text>
+
+    <!-- Section 2: Shared Dossier -->
+    <rect x="14" y="218" width="172" height="120" rx="8" fill="#ffffff" stroke="#d1fae5" stroke-width="1.2"/>
+    <text x="22" y="238" font-size="11.5" font-weight="700" fill="#047857">Shared Audit Dossier</text>
+    <text x="22" y="258" font-size="10.5" fill="#475569">• Sticky notes &amp; hypothesis</text>
+    <text x="22" y="276" font-size="10.5" fill="#475569">• Evidence tagging</text>
+    <text x="22" y="294" font-size="10.5" fill="#475569">• Immutable audit logs</text>
+    <text x="22" y="312" font-size="10.5" fill="#475569">• Role-based approvals</text>
+
+    <!-- Section 3: Legal Export -->
+    <rect x="14" y="354" width="172" height="100" rx="8" fill="#ffffff" stroke="#d1fae5" stroke-width="1.2"/>
+    <text x="22" y="374" font-size="11.5" font-weight="700" fill="#047857">Action &amp; SAR Export</text>
+    <text x="22" y="394" font-size="10.5" fill="#475569">• 1-click legal SAR export</text>
+    <text x="22" y="412" font-size="10.5" fill="#475569">• FinCEN / FIU compliance</text>
+    <text x="22" y="430" font-size="10.5" fill="#475569">• Instant account freezing</text>
+
+    <!-- Tag -->
+    <rect x="14" y="495" width="172" height="34" rx="6" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1"/>
+    <text x="100" y="517" font-size="10.5" font-weight="700" fill="#059669" text-anchor="middle">🛡️ Closed-Loop Resolution</text>
+  </g>
+
+  <!-- ==================== BOTTOM METRICS SUMMARY BAR ==================== -->
+  <g transform="translate(40, 715)">
+    <rect width="1420" height="75" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Metric 1 -->
+    <g transform="translate(40, 15)">
+      <text x="0" y="22" font-size="20" font-weight="800" fill="#2563eb">&lt; 50 ms</text>
+      <text x="0" y="42" font-size="11.5" font-weight="600" fill="#64748b">Detection Core Latency</text>
+    </g>
+    <line x1="280" y1="15" x2="280" y2="60" stroke="#e2e8f0" stroke-width="1.5"/>
+
+    <!-- Metric 2 -->
+    <g transform="translate(320, 15)">
+      <text x="0" y="22" font-size="20" font-weight="800" fill="#0284c7">99.6%</text>
+      <text x="0" y="42" font-size="11.5" font-weight="600" fill="#64748b">Classification Accuracy</text>
+    </g>
+    <line x1="560" y1="15" x2="560" y2="60" stroke="#e2e8f0" stroke-width="1.5"/>
+
+    <!-- Metric 3 -->
+    <g transform="translate(600, 15)">
+      <text x="0" y="22" font-size="20" font-weight="800" fill="#7c3aed">0.976</text>
+      <text x="0" y="42" font-size="11.5" font-weight="600" fill="#64748b">Measured F1-Score</text>
+    </g>
+    <line x1="840" y1="15" x2="840" y2="60" stroke="#e2e8f0" stroke-width="1.5"/>
+
+    <!-- Metric 4 -->
+    <g transform="translate(880, 15)">
+      <text x="0" y="22" font-size="20" font-weight="800" fill="#c026d3">2.73 ms</text>
+      <text x="0" y="42" font-size="11.5" font-weight="600" fill="#64748b">WebSocket Viewport Sync</text>
+    </g>
+    <line x1="1120" y1="15" x2="1120" y2="60" stroke="#e2e8f0" stroke-width="1.5"/>
+
+    <!-- Metric 5 -->
+    <g transform="translate(1160, 15)">
+      <text x="0" y="22" font-size="20" font-weight="800" fill="#059669">FinCEN Ready</text>
+      <text x="0" y="42" font-size="11.5" font-weight="600" fill="#64748b">Legal SAR Dossier Output</text>
+    </g>
+  </g>
+</svg>
+</body>
+</html>

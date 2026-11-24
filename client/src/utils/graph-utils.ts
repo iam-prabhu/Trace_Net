@@ -13,22 +13,26 @@ const COMMUNITY_COLORS = [
 ];
 
 export function getNodeColor(node: GraphNode, colorByCommunity = false): string {
-  if (colorByCommunity && node.communityId !== undefined) {
-    const idx = Math.abs(node.communityId) % COMMUNITY_COLORS.length;
+  const commId = node.communityId ?? (node.properties as any)?.communityId;
+  if (colorByCommunity && commId !== undefined) {
+    const idx = Math.abs(commId) % COMMUNITY_COLORS.length;
     return COMMUNITY_COLORS[idx];
   }
-  switch (node.status) {
-    case 'flagged':
-    case 'suspicious':
-      return '#EF4444'; // Red
-    case 'under_investigation':
-      return '#F59E0B'; // Amber
-    case 'cleared':
-      return '#10B981'; // Green
-    case 'normal':
-    default:
-      return '#3B82F6'; // Blue
+
+  const rawStatus = String(node.status || (node.properties as any)?.status || (node as any).data?.status || '').toLowerCase();
+  const risk = Number(node.riskScore ?? (node.properties as any)?.riskScore ?? (node as any).data?.riskScore ?? 0);
+  const isFlagged = Boolean((node as any).isFlagged || (node.properties as any)?.isFlagged || (node as any).data?.isFlagged);
+
+  if (rawStatus === 'flagged' || rawStatus === 'suspicious' || isFlagged || risk >= 75) {
+    return '#EF4444'; // Red
   }
+  if (rawStatus === 'under_investigation' || rawStatus === 'under_review' || (risk >= 50 && risk < 75)) {
+    return '#F59E0B'; // Amber
+  }
+  if (rawStatus === 'cleared') {
+    return '#10B981'; // Green
+  }
+  return '#3B82F6'; // Blue
 }
 
 export function formatCompactCurrency(val: number): string {
@@ -44,20 +48,31 @@ export function toCytoscapeElements(graph: GraphData, colorByCommunity = false):
     const size = Math.max(34, Math.min(60, 32 + degree * 4));
     const bgColor = getNodeColor(n, colorByCommunity);
 
+    const rawStatus = String(n.status || (n.properties as any)?.status || '').toLowerCase();
+    const risk = Number(n.riskScore ?? (n.properties as any)?.riskScore ?? 0);
+    const isFlagged = Boolean((n as any).isFlagged || (n.properties as any)?.isFlagged || risk >= 75 || rawStatus === 'flagged');
+    const normalizedStatus = isFlagged
+      ? 'flagged'
+      : (rawStatus === 'under_investigation' || rawStatus === 'under_review' || risk >= 50)
+      ? 'under_investigation'
+      : rawStatus === 'cleared'
+      ? 'cleared'
+      : 'normal';
+
     return {
       group: 'nodes',
       data: {
         id: n.id,
         label: n.id,
-        status: n.status || 'normal',
-        accountType: n.accountType || 'CHECKING',
-        balance: n.balance || 0,
-        riskScore: n.riskScore || 20,
-        communityId: n.communityId ?? 0,
+        accountType: n.accountType || (n.properties as any)?.accountType || 'CHECKING',
+        balance: n.balance ?? (n.properties as any)?.balance ?? 0,
+        riskScore: risk,
+        communityId: n.communityId ?? (n.properties as any)?.communityId ?? 0,
         degree,
-        bgColor,
         size,
         ...n.properties,
+        status: normalizedStatus,
+        bgColor,
       },
       position: n.x !== undefined ? { x: n.x, y: n.y ?? 0 } : undefined,
     };

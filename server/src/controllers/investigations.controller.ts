@@ -2,6 +2,8 @@ import { Response, NextFunction } from 'express';
 import * as investigationsService from '../services/investigations.service';
 import { sendSuccess, sendError } from '../utils/response';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { io } from '../app';
+import { getRoomActiveUsers } from '../sockets';
 
 export async function getInvestigations(
   req: AuthRequest,
@@ -46,6 +48,14 @@ export async function createInvestigation(
   try {
     const creatorName = req.user?.name || req.user?.email || 'Investigator';
     const item = await investigationsService.createInvestigation(req.body, creatorName);
+    // Broadcast real-time notification to all connected clients
+    io.emit('investigation:created', {
+      id: item.id,
+      title: item.title,
+      createdBy: creatorName,
+      priority: item.priority,
+      createdAt: item.createdAt,
+    });
     sendSuccess(res, item, 201, 'Investigation created successfully');
   } catch (err: any) {
     sendError(res, err.message || 'Failed to create investigation', 400);
@@ -63,6 +73,14 @@ export async function updateInvestigation(
       sendError(res, 'Investigation not found', 404);
       return;
     }
+    // Broadcast status update globally to all connected dashboards and rooms
+    io.emit('investigation:status-updated', {
+      investigationId: item.id,
+      id: item.id,
+      status: item.status,
+      priority: item.priority,
+      updatedBy: req.user?.name || req.user?.email || 'Investigator',
+    });
     sendSuccess(res, item, 200, 'Investigation updated successfully');
   } catch (err) {
     next(err);
@@ -147,5 +165,19 @@ export async function createNote(
     sendSuccess(res, note, 201, 'Note created successfully');
   } catch (err: any) {
     sendError(res, err.message || 'Failed to create note', 400);
+  }
+}
+
+export async function getInvestigationMembers(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const id = String(req.params.id);
+    const members = getRoomActiveUsers(id);
+    sendSuccess(res, members);
+  } catch (err) {
+    next(err);
   }
 }

@@ -14,7 +14,11 @@ export class InvestigationRepository {
     priority?: string;
     search?: string;
   }): Promise<Investigation[]> {
-    let list = Array.from(inMemoryStore.investigations.values());
+    const map = new Map<string, Investigation>();
+    for (const [, inv] of inMemoryStore.investigations) {
+      map.set(inv.title || inv.id, inv);
+    }
+    let list = Array.from(map.values());
 
     if (filter?.status && filter.status !== 'ALL') {
       const s = filter.status.toUpperCase();
@@ -46,7 +50,13 @@ export class InvestigationRepository {
 
   async getInvestigationById(id: string): Promise<Investigation | null> {
     const inv = inMemoryStore.investigations.get(id);
-    return inv || null;
+    if (inv) return inv;
+    for (const [, item] of inMemoryStore.investigations) {
+      if (item.id.toLowerCase() === id.toLowerCase() || item.title.toLowerCase().includes(id.toLowerCase())) {
+        return item;
+      }
+    }
+    return null;
   }
 
   async createInvestigation(data: {
@@ -85,7 +95,18 @@ export class InvestigationRepository {
     id: string,
     updates: Partial<Investigation>
   ): Promise<Investigation | null> {
-    const inv = inMemoryStore.investigations.get(id);
+    let inv = inMemoryStore.investigations.get(id);
+    let keyToUpdate = id;
+
+    if (!inv) {
+      for (const [key, item] of inMemoryStore.investigations) {
+        if (item.id.toLowerCase() === id.toLowerCase() || item.title.toLowerCase().includes(id.toLowerCase())) {
+          inv = item;
+          keyToUpdate = key;
+          break;
+        }
+      }
+    }
     if (!inv) return null;
 
     const updated: Investigation = {
@@ -95,7 +116,12 @@ export class InvestigationRepository {
       updatedAt: new Date(),
     };
 
-    inMemoryStore.investigations.set(id, updated);
+    // Update all matching aliases in store
+    for (const [key, item] of inMemoryStore.investigations) {
+      if (item.id.toLowerCase() === id.toLowerCase() || item.title === inv.title) {
+        inMemoryStore.investigations.set(key, { ...item, ...updates, updatedAt: new Date() });
+      }
+    }
     return updated;
   }
 

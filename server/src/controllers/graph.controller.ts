@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as graphService from '../services/graph.service';
+import { runGCNInference } from '../algorithms/machine-learning/gcn';
 import { sendSuccess, sendError } from '../utils/response';
 
 export async function getGraph(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -96,6 +97,17 @@ export async function getStatistics(_req: Request, res: Response, next: NextFunc
   try {
     const stats = await graphService.getStatistics();
     sendSuccess(res, stats);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function runGCN(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const threshold = req.body?.threshold !== undefined ? Number(req.body.threshold) : (req.query?.threshold ? Number(req.query.threshold) : 0.75);
+    const dropout = req.body?.dropout !== undefined ? Number(req.body.dropout) : 0.1;
+    const result = runGCNInference({ threshold, dropout });
+    sendSuccess(res, result);
   } catch (err) {
     next(err);
   }

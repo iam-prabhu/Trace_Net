@@ -7,8 +7,11 @@ export interface Investigation {
   title: string;
   description: string;
   status: InvestigationStatus;
+  priority?: string;
   createdBy: string;
   assignedTo?: string;
+  nodeIds?: string[];
+  initialAccountIds?: string[];
   createdAt: string;
   updatedAt: string;
 }

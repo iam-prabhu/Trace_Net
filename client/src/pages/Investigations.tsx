@@ -77,17 +77,17 @@ export default function Investigations() {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 transition shrink-0"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/25 transition shrink-0 cursor-pointer active:scale-[0.99]"
         >
-          <Plus className="w-4 h-4" />
-          <span>New Investigation Case</span>
+          <Plus className="w-4 h-4 !text-white shrink-0" />
+          <span className="!text-white font-bold">New Investigation Case</span>
         </button>
       </div>
 
       {/* Filter and Tab Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900 border border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
         {/* Status Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800 text-xs overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs overflow-x-auto">
           {[
             { id: 'all', label: 'All Cases' },
             { id: 'open', label: 'Open' },
@@ -97,10 +97,10 @@ export default function Investigations() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition whitespace-nowrap cursor-pointer ${
                 activeTab === tab.id
-                  ? 'bg-blue-600 text-white shadow'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 !text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white'
               }`}
             >
               {tab.label}
@@ -110,13 +110,13 @@ export default function Investigations() {
 
         {/* Search */}
         <div className="relative w-full sm:w-72">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search dossier by ID or title..."
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-blue-500"
+            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:outline-none focus:border-blue-500"
           />
         </div>
       </div>

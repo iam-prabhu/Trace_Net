@@ -1,30 +1,87 @@
 import { useEffect } from 'react';
-import { useCollaborationStore } from '../store/collaboration.store';
-import { useWebSocket } from './useWebSocket';
+import { useCollaborationStore, CollaboratorPresence } from '../store/collaboration.store';
+import { getSocket } from '../services/socket';
+import { getInvestigationMembers } from '../services/investigation.service';
 
 export function useCollaboration(investigationId?: string) {
-  const { collaborators, setActiveInvestigation, addCollaborator, removeCollaborator } =
-    useCollaborationStore();
-  const { socket } = useWebSocket();
+  const {
+    collaborators,
+    setActiveInvestigation,
+    setCollaborators,
+    addCollaborator,
+    removeCollaborator,
+    updateCollaborator,
+  } = useCollaborationStore();
 
   useEffect(() => {
-    if (!investigationId || !socket) return;
+    if (!investigationId) return;
     setActiveInvestigation(investigationId);
-    socket.emit('join:investigation', investigationId);
 
-    socket.on('user:joined', (data: { userId: string }) => {
-      addCollaborator({ userId: data.userId, email: '', color: '#' + Math.floor(Math.random()*16777215).toString(16) });
+    // Initial REST sync of current room members
+    getInvestigationMembers(investigationId).then(members => {
+      if (members.length > 0) {
+        setCollaborators(members);
+      }
     });
-    socket.on('user:left', (data: { userId: string }) => {
-      removeCollaborator(data.userId);
-    });
+
+    let socket: any = null;
+    try {
+      socket = getSocket();
+
+      // Join room
+      socket.emit('investigation:join', investigationId);
+
+      // Presence list snapshot on joining
+      socket.on('investigation:presence-list', (data: { investigationId: string; users: CollaboratorPresence[] }) => {
+        if (data.users) {
+          setCollaborators(data.users);
+        }
+      });
+
+      socket.on('investigation:users', (data: { investigationId: string; users: CollaboratorPresence[] }) => {
+        if (data.users) {
+          setCollaborators(data.users);
+        }
+      });
+
+      // Another user joined
+      socket.on('investigation:user-joined', (data: { investigationId: string; user: CollaboratorPresence; users?: CollaboratorPresence[] }) => {
+        if (data.users) {
+          setCollaborators(data.users);
+        } else if (data.user) {
+          addCollaborator(data.user);
+        }
+      });
+
+      // User left
+      socket.on('investigation:user-left', (data: { investigationId: string; userId: string; socketId?: string; users?: CollaboratorPresence[] }) => {
+        if (data.users) {
+          setCollaborators(data.users);
+        } else {
+          removeCollaborator(data.userId || data.socketId || '');
+        }
+      });
+
+      // Presence update (activity, cursor, etc.)
+      socket.on('investigation:presence', (data: { userId: string; activity?: string; cursor?: { x: number; y: number } }) => {
+        updateCollaborator(data.userId, { activity: data.activity, cursor: data.cursor });
+      });
+    } catch (err) {
+      console.warn('Socket useCollaboration error:', err);
+    }
 
     return () => {
-      socket.emit('leave:investigation', investigationId);
-      socket.off('user:joined');
-      socket.off('user:left');
+      if (socket) {
+        socket.emit('investigation:leave', investigationId);
+        socket.off('investigation:presence-list');
+        socket.off('investigation:users');
+        socket.off('investigation:user-joined');
+        socket.off('investigation:user-left');
+        socket.off('investigation:presence');
+      }
+      setActiveInvestigation(null);
     };
-  }, [investigationId, socket, setActiveInvestigation, addCollaborator, removeCollaborator]);
+  }, [investigationId, setActiveInvestigation, setCollaborators, addCollaborator, removeCollaborator, updateCollaborator]);
 
   return { collaborators };
 }
